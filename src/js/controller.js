@@ -37,9 +37,8 @@
         if (vm.getAvailableDatesFromAPI) {
             vm.availableDates = [];
             getAvailableDates();
-            //Disable not available dates in datepicker and clean minDate option
+            //Disable not available dates in datepicker
             vm.datepickerOptions.dateDisabled = disableDates;
-            vm.datepickerOptions.minDate = undefined;
         }
 
 

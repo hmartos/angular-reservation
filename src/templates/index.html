@@ -7,7 +7,9 @@
                 <h5 ng-if="!reservationCtrl.secondTabLocked">{{reservationCtrl.selectedDate | date: reservationCtrl.dateFormat}}</h5>
             </uib-tab-heading>
 
-            <div ng-include="reservationCtrl.datepickerTemplate"></div>
+            <div ng-include="'loader.html'" class="text-center" style="min-height: 250px" ng-if="reservationCtrl.loader"></div>
+
+            <div ng-include="reservationCtrl.datepickerTemplate" ng-if="!reservationCtrl.loader"></div>
         </uib-tab>
 
         <uib-tab index="1" disable="reservationCtrl.secondTabLocked">
@@ -17,7 +19,7 @@
                 <h5 ng-if="!reservationCtrl.thirdTabLocked">{{reservationCtrl.selectedHour}}</h5>
             </uib-tab-heading>
 
-            <div ng-include="'loader.html'" class="text-center" ng-if="reservationCtrl.loader"></div>
+            <div ng-include="'loader.html'" class="text-center" style="min-height: 250px" ng-if="reservationCtrl.loader"></div>
 
             <div class="angular-reservation-availableHour" ng-if="!reservationCtrl.loader && reservationCtrl.availableHours.length > 0">
                 <div ng-include="reservationCtrl.availableHoursTemplate"></div>
@@ -36,7 +38,7 @@
 
             <form class="form-horizontal" name="reserveForm" novalidate
                   ng-submit="reserveForm.$valid && reservationCtrl.reserve(reservationCtrl.selectedDate, reservationCtrl.selectedHour, reservationCtrl.userData)">
-                <div ng-include="'loader.html'" class="text-center" ng-if="reservationCtrl.loader"></div>
+                <div ng-include="'loader.html'" class="text-center" style="min-height: 250px" ng-if="reservationCtrl.loader"></div>
 
                 <fieldset ng-if="!reservationCtrl.loader">
                     <div ng-include="reservationCtrl.clientFormTemplate"></div>

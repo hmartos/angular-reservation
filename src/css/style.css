@@ -40,3 +40,7 @@
     margin-top: 2em;
     margin-bottom: 2em;
 }
+
+.angular-reservation-loader-min-height {
+    min-height: 500px;
+}
