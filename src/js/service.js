@@ -5,6 +5,21 @@
 (function() {
     function reservationService($q, $filter, $uibModal, reservationConfig) {
 
+        //Completed get available dates callback
+        this.onCompletedGetAvailableDates = function(status, message) {
+            console.log("Executing completed get available dates callback");
+        }
+
+        //Success get available dates callback
+        this.onSuccessfulGetAvailableDates = function(status, message, availableDates) {
+            console.log("Executing successful get available dates callback");
+        }
+
+        //Error get available dates callback
+        this.onErrorGetAvailableDates = function(status, message) {
+            console.log("Executing error get available dates callback");
+        }
+
         //Before get available hours callback
         this.onBeforeGetAvailableHours = function(selectedDate) {
             console.log("Executing before get available hours callback");

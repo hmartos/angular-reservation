@@ -17,6 +17,8 @@
     function reservationConfigProvider() {
 
         var config = {
+            getAvailableDatesFromAPI: false, //Enable/disable load of available dates from API
+            getAvailableDatesAPIUrl: "http://localhost:8080/availableDates", //API url endpoint to load list of available dates
             getAvailableHoursAPIUrl: "http://localhost:8080/availableHours", //API url endpoint to load list of available hours
             reserveAPIUrl: "http://localhost:8080/reserve", //API url endpoint to do a reserve
             dateFormat: "yyyy-MM-dd",
@@ -57,9 +59,7 @@
         vm.secondTabLocked = true;
         vm.thirdTabLocked = true;
 
-        var today = new Date();
-        today.setHours(0,0,0,0); //Date at start of today
-        vm.selectedDate = today;
+        vm.selectedDate = new Date();
 
         vm.selectedHour = "";
 
@@ -67,6 +67,7 @@
 
         vm.loader = false;
 
+        vm.getAvailableDatesFromAPI = reservationConfig.getAvailableDatesFromAPI;
         vm.dateFormat = reservationConfig.dateFormat;
 
         vm.datepickerTemplate = reservationConfig.datepickerTemplate;
@@ -74,14 +75,21 @@
         vm.noAvailableHoursTemplate = reservationConfig.noAvailableHoursTemplate;
         vm.clientFormTemplate = reservationConfig.clientFormTemplate;
 
-        vm.datepickerOptions = $scope.datepickerOptions;
+        vm.datepickerOptions = $scope.datepickerOptions || {};
 
         $translate.use(reservationConfig.language);
 
+        if (vm.getAvailableDatesFromAPI) {
+            vm.availableDates = [];
+            getAvailableDates();
+            //Disable not available dates in datepicker and clean minDate option
+            vm.datepickerOptions.dateDisabled = disableDates;
+            vm.datepickerOptions.minDate = undefined;
+        }
+
 
         //METHODS
-        // TODO This function should have all needed parameters in order to test it better
-        vm.onSelectDate = function(date) {
+        vm.onSelectDate = function (date) {
             vm.selectedDate = date;
             vm.secondTabLocked = false;
             vm.selectedTab = 1;
@@ -89,18 +97,77 @@
             vm.loader = true;
         }
 
-        vm.selectHour = function(hour) {
+        vm.selectHour = function (hour) {
             vm.thirdTabLocked = false;
             vm.selectedHour = hour;
             vm.selectedTab = 2;
         }
 
-        vm.reserve = function(date, hour, userData) {
+        vm.reserve = function (date, hour, userData) {
             onBeforeReserve(date, hour, userData);
         }
 
 
         //PRIVATE METHODS
+
+        /**
+         * Get available dates
+         */
+        function getAvailableDates() {
+            vm.loader = true;
+
+            reservationAPIFactory.getAvailableDates().then(function () {
+                vm.loader = false;
+
+                var status = vm.availableDatesStatus = reservationAPIFactory.status;
+                var message = vm.availableDatesMessage = reservationAPIFactory.message;
+
+                //Completed get available hours callback
+                reservationService.onCompletedGetAvailableDates(status, message);
+
+                //Success
+                if (status == 'SUCCESS') {
+                    vm.availableDates = reservationAPIFactory.availableDates;
+                    //Successful get available hours callback
+                    reservationService.onSuccessfulGetAvailableDates(status, message, vm.availableDates);
+
+                    //Preselect first available date
+                    if (vm.availableDates.length > 0) {
+                        vm.selectedDate = new Date(vm.availableDates[0]);
+                    }
+
+                    //Error
+                } else {
+                    //Error get available hours callback
+                    reservationService.onErrorGetAvailableDates(status, message);
+                }
+            });
+        }
+
+        /**
+         * Check if a date is available <=> it is in availableDates array
+         * @param date
+         * @returns {boolean}
+         */
+        function isDateAvailable(date) {
+            if (vm.availableDates.indexOf(date.toISOString().substr(0, 10)) !== -1) {
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * Function to disable all dates not in available dates list
+         * @param dateAndMode
+         * @returns {boolean}
+         */
+        function disableDates(dateAndMode) {
+            var date = dateAndMode.date,
+                mode = dateAndMode.mode;
+
+            return (mode === 'day' && !isDateAvailable(date));
+        }
 
         /**
          * Function executed before get available hours function.
@@ -109,7 +176,7 @@
             reservationService.onBeforeGetAvailableHours(date).then(function () {
                 getAvailableHours(date);
 
-            }, function() {
+            }, function () {
                 console.log("onBeforeGetAvailableHours: Rejected promise");
             });
         }
@@ -136,7 +203,7 @@
                     //Successful get available hours callback
                     reservationService.onSuccessfulGetAvailableHours(status, message, date, vm.availableHours);
 
-                //Error
+                    //Error
                 } else {
                     //Error get available hours callback
                     reservationService.onErrorGetAvailableHours(status, message, date);
@@ -151,7 +218,7 @@
             reservationService.onBeforeReserve(date, hour, userData).then(function () {
                 reserve(date, hour, userData);
 
-            }, function() {
+            }, function () {
                 console.log("onBeforeReserve: Rejected promise");
             });
         }
@@ -159,7 +226,6 @@
         /**
          * Do reserve POST with selectedDate, selectedHour and userData as parameters of the call
          */
-        // TODO This function should have all needed parameters in order to test it better
         function reserve(date, hour, userData) {
             vm.loader = true;
 
@@ -180,7 +246,7 @@
                     //Successful reserve calback
                     reservationService.onSuccessfulReserve(status, message, date, hour, userData);
 
-                //Error
+                    //Error
                 } else {
                     //Error reserve callback
                     reservationService.onErrorReserve(status, message, date, hour, userData);
@@ -222,10 +288,32 @@
         reservationAPI.status = "";
         reservationAPI.message = "";
 
-        reservationAPI.availableHours = "";
+        reservationAPI.availableHours = [];
+        reservationAPI.availableDates = [];
 
 
         //METHODS
+
+        //Call to get list of available dates
+        reservationAPI.getAvailableDates = function() {
+            return $http({
+                method: 'GET',
+                url: reservationConfig.getAvailableDatesAPIUrl,
+                responseType: 'json'
+
+            }).then(function(response) {
+                //Success handler
+                console.log(response.data);
+                validateAvailableDatesResponseData(response.data);
+
+                reservationAPI.status = response.data.status;
+                reservationAPI.message = response.data.message;
+                reservationAPI.availableDates = response.data.availableDates;
+
+            }, function(response) {
+                reservationAPI.errorManagement(response.status);
+            });
+        }
 
         //Call to get list of available hours
         reservationAPI.getAvailableHours = function(params) {
@@ -290,6 +378,13 @@
             reservationAPI.availableHours = "";
         }
 
+        //Validate if available dates response has expected keys
+        function validateAvailableDatesResponseData(data) {
+            if(!data.hasOwnProperty('status')) console.error("Get available hours response should have a 'status' key");
+            if(!data.hasOwnProperty('message')) console.error("Get available hours response should have a 'message' key");
+            if(!data.hasOwnProperty('availableDates')) console.error("Get available hours response should have a 'availableDates' key");
+        }
+
         //Validate if available hours response has expected keys
         function validateAvailableHoursResponseData(data) {
             if(!data.hasOwnProperty('status')) console.error("Get available hours response should have a 'status' key");
@@ -314,6 +409,21 @@
  */
 (function() {
     function reservationService($q, $filter, $uibModal, reservationConfig) {
+
+        //Completed get available dates callback
+        this.onCompletedGetAvailableDates = function(status, message) {
+            console.log("Executing completed get available dates callback");
+        }
+
+        //Success get available dates callback
+        this.onSuccessfulGetAvailableDates = function(status, message, availableDates) {
+            console.log("Executing successful get available dates callback");
+        }
+
+        //Error get available dates callback
+        this.onErrorGetAvailableDates = function(status, message) {
+            console.log("Executing error get available dates callback");
+        }
 
         //Before get available hours callback
         this.onBeforeGetAvailableHours = function(selectedDate) {

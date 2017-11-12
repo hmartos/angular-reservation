@@ -92,7 +92,7 @@ There is also a watch task to watch for any change on sources files and automati
 
 angular-reservation has in`tegration tests that allows developer to check if new features breaks functionality.
 You can run tests on a single run or watch for source code to change and execute tests each time source code changes.
-``
+
 ##### Single run test
 Execute `npm run test-single-run`
 
