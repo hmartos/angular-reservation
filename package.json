@@ -1,6 +1,6 @@
 {
   "name": "angular-reservation",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "description": "AngularJS module for time reservation management. It can be use to reserve a citation on any kind of service provided in time slots",
   "main": "app.js",
   "repository": "https://github.com/hmartos/angular-reservation",
