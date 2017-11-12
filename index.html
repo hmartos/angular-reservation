@@ -208,13 +208,23 @@
                 <p>You can configure angular-reservation module during config phase passing configuration options.</p>
                 <ul>
                     <li>
+                        <strong>getAvailableDatesFromAPI</strong>:
+                        Enable/disable load of available dates from a REST API. Default value is false.
+                    </li><br/>
+
+                    <li>
+                        <strong>getAvailableDatesAPIUrl</strong>:
+                        API URL to load list of available dates. Default value is:
+                    </li><br/>
+
+                    <li>
                         <strong>getAvailableHoursAPIUrl</strong>:
-                        API URL to load list of available hours for selected date.
+                        API URL to load list of available hours for selected date. Default value is:
                     </li><br/>
 
                     <li>
                         <strong>reserveAPIUrl</strong>:
-                        API URL to reserve selected hour for selected date, passing client data JSON.
+                        API URL to reserve selected hour for selected date, passing client data JSON. Default value is:
                     </li><br/>
 
                     <li>
@@ -269,6 +279,8 @@
                     //Configuration of reservation module
                     angular.module('myApp').config(function (reservationConfigProvider) {
                         var config = {
+                            getAvailableDatesFromAPI: false,
+                            getAvailableDatesAPIUrl: "http://api-url/api/availableDates",
                             getAvailableHoursAPIUrl: "http://api-url/api/availableHours",
                             reserveAPIUrl: "http://api-url/api/reserve",
                             language: "es",
@@ -279,6 +291,32 @@
                             noAvailableHoursTemplate: "partials/noAvailableHours.html"
                             clientFormTemplate: "partials/clientFormTemplate.html",
                             confirmationModalTemplate: "partials/confirmModal.html"
+                        };
+
+                        reservationConfigProvider.set(config);
+                    });
+                </pre>
+
+                <strong>Loading available dates from a REST API</strong>
+                <ul>
+                    <li>You can configure this module to load a list of available dates from a REST API. This can be useful if you need to enable only a
+                        few specific dates, otherwise, you should prefer using Datepicker options of the directive (see above).</li>
+                    <li>To enable loading of available dates from a REST API you need to set <em>getAvailableDatesFromAPI</em> configuration option to <em>true</em>
+                        and set <em>getAvailableDatesAPIUrl</em> to the API URL that will handle the request
+                        (see <a href="https://github.com/hmartos/angular-reservation/blob/master/APIDocs.md" target="_blank">API docs)</a>.
+                    </li>
+                    <li>The loader will be shown while request is pending.</li>
+                    <li>Available dates returned from the REST API should be in <a href="https://www.w3.org/TR/NOTE-datetime" target="_blank">ISO 8061</a>
+                        format.</li>
+                </ul>
+                <pre class="prettyprint">
+
+                    //Configuration of reservation module
+                    angular.module('myApp').config(function (reservationConfigProvider) {
+                        var config = {
+                            getAvailableDatesFromAPI: true,
+                            getAvailableDatesAPIUrl: "http://my-api-url/availableDates",
+                            ...
                         };
 
                         reservationConfigProvider.set(config);
