@@ -21,6 +21,10 @@
         vm.userData = {};
 
         vm.loader = false;
+        vm.config =  reservationConfig || {};
+        if ($scope.config) {
+            vm.config = angular.extend(vm.config, $scope.config);
+        }
 
         vm.getAvailableDatesFromAPI = reservationConfig.getAvailableDatesFromAPI;
         vm.dateFormat = reservationConfig.dateFormat;
