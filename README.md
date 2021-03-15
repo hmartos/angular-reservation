@@ -75,6 +75,13 @@ angular.module('myApp').config(function (reservationConfigProvider) {
 });
 ```
 
+You can also extend the module configuration from a controller
+
+```html
+<!-- angular-reservation directive -->
+<reservation config="myCtrl.config"></reservation>
+```
+
 # [See the full documentation](https://hmartos.github.io/angular-reservation/#!#docs)
 
 
