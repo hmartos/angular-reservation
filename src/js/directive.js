@@ -8,7 +8,8 @@
         return {
             restrict: 'E',
             scope: {
-                datepickerOptions: '='
+                datepickerOptions: '=',
+                config: '='
             },
             controller: 'ReservationCtrl',
             controllerAs: 'reservationCtrl',
