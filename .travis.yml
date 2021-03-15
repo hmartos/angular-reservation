@@ -1,6 +1,11 @@
 language: node_js
+
 node_js:
   - '10'
+
+# Install Chrome addon
+addons:
+  - chrome: stable
 
 before_script:
   - export CHROME_BIN=chromium-browser
