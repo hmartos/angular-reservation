@@ -13,4 +13,4 @@ before_script:
   - sleep 1 # give server time to start
 
 script:
-  - npm run test-single-run --browsers ChromeHeadless
+  - npm run test-single-run
