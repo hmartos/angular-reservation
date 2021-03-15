@@ -21,18 +21,22 @@
         vm.userData = {};
 
         vm.loader = false;
+        vm.config =  reservationConfig || {};
+        if ($scope.config) {
+            vm.config = angular.extend(vm.config, $scope.config);
+        }
 
-        vm.getAvailableDatesFromAPI = reservationConfig.getAvailableDatesFromAPI;
-        vm.dateFormat = reservationConfig.dateFormat;
+        vm.getAvailableDatesFromAPI = vm.config.getAvailableDatesFromAPI;
+        vm.dateFormat = vm.config.dateFormat;
 
-        vm.datepickerTemplate = reservationConfig.datepickerTemplate;
-        vm.availableHoursTemplate = reservationConfig.availableHoursTemplate;
-        vm.noAvailableHoursTemplate = reservationConfig.noAvailableHoursTemplate;
-        vm.clientFormTemplate = reservationConfig.clientFormTemplate;
+        vm.datepickerTemplate = vm.config.datepickerTemplate;
+        vm.availableHoursTemplate = vm.config.availableHoursTemplate;
+        vm.noAvailableHoursTemplate = vm.config.noAvailableHoursTemplate;
+        vm.clientFormTemplate = vm.config.clientFormTemplate;
 
         vm.datepickerOptions = $scope.datepickerOptions || {};
 
-        $translate.use(reservationConfig.language);
+        $translate.use(vm.config.language);
 
         if (vm.getAvailableDatesFromAPI) {
             vm.availableDates = [];
