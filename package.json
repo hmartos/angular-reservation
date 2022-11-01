@@ -5,7 +5,7 @@
   "main": "app.js",
   "repository": "https://github.com/hmartos/angular-reservation",
   "devDependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-angular-templatecache": "^1.8.0",
     "gulp-concat": "^2.6.0",
     "gulp-minify-css": "^1.2.3",
@@ -18,7 +18,7 @@
     "karma-jasmine": "^0.3.8",
     "karma-junit-reporter": "^0.4.2",
     "karma-spec-reporter": "0.0.26",
-    "protractor": "^4.0.9"
+    "protractor": "^7.0.0"
   },
   "scripts": {
     "pretest": "npm install",
